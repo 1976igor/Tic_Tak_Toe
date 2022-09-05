@@ -1,0 +1,130 @@
+import java.util.Scanner;
+public class Tic_Tak_Toe {
+	// fiksovani zminni, jaki vkazujut na vmist komirky:
+	public static final String POROZHNIA = " ";
+	public static final String XRESTYK = " X ";
+	public static final String NOLYK = " 0 ";
+	public static String Aktyvnyj_Gravec;
+	// zminni dla zberihannia info pro ihrove pole i stan hry:
+	public static final int RIADKIV = 3, STOVPCHYKIV = 3;
+	public static final String [][] sitka = new String [RIADKIV][STOVPCHYKIV];
+	public static int StatusGry ;
+	public static final int STATUS_GRATRYVAJE=0, STATUS_NICHYJA=1, STATUS_PEREMOGA_X=3, STATUS_PEREMOHA_0=4;
+	public static Scanner in = new Scanner (System.in);
+
+	public static void main(String[] args) {	
+		PochatyGru();
+		do{
+			OtrymatyVvedenniaGravcia();
+			ProanalizuvatySitku ();
+			VyvestySitku();
+			if (StatusGry==STATUS_PEREMOGA_X){
+				System.out.println("'X' peremig! Vitajemo!");
+			}else if (StatusGry==STATUS_PEREMOHA_0){
+				System.out.println("'0' peremig! Vitajemo!");
+			}else if (StatusGry==STATUS_NICHYJA){
+				System.out.println("Gra vnichyju! Do pobachennia!");
+		}
+			Aktyvnyj_Gravec = (Aktyvnyj_Gravec==XRESTYK?NOLYK:XRESTYK);
+		}
+		while (StatusGry==STATUS_GRATRYVAJE);
+}
+	public static void PochatyGru(){
+		for ( int riad = 0; riad < RIADKIV; riad++){
+			for (int stovp = 0; stovp < STOVPCHYKIV; stovp++){
+				sitka[riad][stovp]=POROZHNIA;
+				}
+			}	
+		Aktyvnyj_Gravec = XRESTYK;
+		VyvestySitku();
+	}
+	public static void OtrymatyVvedenniaGravcia(){
+		boolean VvedenniaDijsne = false;
+		do{
+			System.out.println("Gravec '"+Aktyvnyj_Gravec+"', vvedit riadok(1-3) i stovpcyk(1-3) cherez probil");
+			int riad = in.nextInt()-1; int stovp = in.nextInt()-1;
+			if (riad>=0 && riad < RIADKIV && stovp >=0 && stovp < STOVPCHYKIV && sitka [riad][stovp]==POROZHNIA){
+				sitka [riad][stovp] = Aktyvnyj_Gravec;
+				VvedenniaDijsne = true;
+			} else {
+				System.out.println ("Vybrane rozmishchennia (" + (riad + 1) + "," + (stovp + 1) + ") ne mozhe buty vykorystane. Sprobujte she raz...");
+			}
+		}
+		while (!VvedenniaDijsne);
+	}
+	public static void ProanalizuvatySitku (){
+		String peremozhec = ZnajtyPeremozhcia();
+		if (peremozhec.equals (XRESTYK)){
+			StatusGry = STATUS_PEREMOGA_X;
+		}else if (peremozhec.equals(NOLYK)){
+			StatusGry = STATUS_PEREMOHA_0;
+		}else if (ChyVsiKlitynkyZapovneni()){
+			StatusGry = STATUS_NICHYJA;
+		}else{
+			StatusGry = STATUS_GRATRYVAJE;
+		}
+	}
+	public static boolean ChyVsiKlitynkyZapovneni (){
+		for (int riad = 0; riad < RIADKIV; riad++){
+			for (int stovp = 0; stovp < STOVPCHYKIV; stovp++){
+				if (sitka [riad][stovp]==POROZHNIA){
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	public static String ZnajtyPeremozhcia (){
+		int ikilkistOdnakovyx;
+		//pereviriajemo riadky
+		for (int riad = 0; riad < RIADKIV; riad++){
+			ikilkistOdnakovyx=0;
+			for (int stovp = 0; stovp < STOVPCHYKIV; stovp++){
+				if (sitka [riad][stovp] != POROZHNIA && sitka [riad][0]== sitka [riad][stovp]){
+					ikilkistOdnakovyx++;
+				}
+			}
+			if (ikilkistOdnakovyx==3){
+				return sitka [riad][0];
+				}
+			}
+		//pereviriajemo stovpchyky
+		for (int stovp = 0; stovp < STOVPCHYKIV; stovp++){
+			ikilkistOdnakovyx=0;
+			for (int riad = 0; riad < RIADKIV; riad++){
+				if (sitka [0][stovp] != POROZHNIA && sitka [0][stovp]== sitka [riad][stovp]){
+					ikilkistOdnakovyx++;
+				}
+			}
+			if (ikilkistOdnakovyx==3){
+				return sitka [0][stovp];
+		}
+	}
+		// pereviriajemo po diagonali z liva na pravo
+		if (sitka[0][0]!= POROZHNIA && sitka[0][0]==sitka [1][1] && sitka[0][0]==sitka [2][2]){
+			return sitka [0][0];
+		}
+		// pereviriajemo po diagonali z prava na livo
+		if (sitka[0][2]!= POROZHNIA && sitka[1][1]==sitka [0][2] && sitka[2][0]==sitka [0][2]){
+			return sitka [0][2];
+			}
+		return POROZHNIA;
+	}
+
+public static void VyvestySitku(){
+		for ( int riad = 0; riad < RIADKIV; riad++){
+			for (int stovp = 0; stovp < STOVPCHYKIV; stovp++){
+				System.out.print(sitka[riad][stovp]);
+				if (stovp!=STOVPCHYKIV-1){
+					System.out.print(" | ");
+				}
+			}
+			System.out.println();
+			if (riad!=RIADKIV-1){
+				System.out.println("-----------");
+			}
+		}
+		System.out.println();
+	}
+
+}
